@@ -19,8 +19,9 @@ class KMeans:
         Returns:
             self
         """
-        self.labels_ = [None for _ in range(len(data))]
         self.centroids_ = self._select_initial_centroids(data)
+        self.labels_ = get_cluster_labels(data, self.centroids_)
+        self.centroids_ = get_centroids(data, self.labels_)
         # repeat
         #   Form K clusters by assigning each point to its closest centroid
         #   Recompute the centroid of each cluster
@@ -39,6 +40,29 @@ class KMeans:
             K initial centroids.
         """
         return sample(data, self._num_clusters)
+
+
+def get_centroids(data: List[List], labels: List[int]) -> List[List]:
+    centroids = []
+    clusters = list(set(labels))
+    for cluster in clusters:
+        points_in_cluster = [point[0] for point in zip(data, labels) if point[1] == cluster]
+        centroid = get_centroid(points_in_cluster)
+        centroids.append(centroid)
+    return centroids
+
+
+def get_centroid(cluster: List[List]) -> List:
+    """Calculate the center for a cluster of points.
+    
+    Args:
+        cluster: A cluster of points.
+
+    Returns:
+        The center of the cluster.
+    """
+    total = len(cluster)
+    return [sum(points) / total for points in zip(*cluster)]
 
 
 def get_percentage_of_points_changed(previous_labels: List, labels: List) -> float:

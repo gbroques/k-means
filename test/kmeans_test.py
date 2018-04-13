@@ -2,7 +2,11 @@ import unittest
 from random import seed
 from typing import List
 
+import numpy as np
+
 from kmeans import KMeans
+from kmeans.kmeans import get_centroid
+from kmeans.kmeans import get_centroids
 from kmeans.kmeans import get_cluster_label
 from kmeans.kmeans import get_cluster_labels
 from kmeans.kmeans import get_percentage_of_points_changed
@@ -37,7 +41,7 @@ class KMeansTest(unittest.TestCase):
 
     def test_fit(self):
         seed(1)
-        expected_labels = [1, 1, 1, 0, 0, 0]
+        expected_labels = [0, 0, 0, 1, 1, 1]
         k_means = KMeans(num_clusters=self.num_clusters)
         k_means.fit(self.data)
         self.assertEqual(expected_labels, k_means.labels_)
@@ -75,6 +79,18 @@ class KMeansTest(unittest.TestCase):
         centroids = [[-1, -2], [2, 1]]
         clusters = get_cluster_labels([[-2, -1], [1, 1]], centroids)
         self.assertEqual(expected_clusters, clusters)
+
+    def test_get_centroids(self):
+        labels = [0, 0, 0, 1, 1, 1]
+        expected_centroids = [[-1.6666667, -1.6666667], [1.6666667, 1.6666667]]
+        centroids = get_centroids(self.data, labels)
+        np.testing.assert_almost_equal(expected_centroids, centroids)
+
+    def test_get_centroid(self):
+        cluster_of_points = [[1, 1], [2, 3], [6, 2]]
+        expected_centroid = [3, 2]
+        centroid = get_centroid(cluster_of_points)
+        self.assertEqual(expected_centroid, centroid)
 
 
 if __name__ == '__main__':
