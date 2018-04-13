@@ -5,6 +5,7 @@ from typing import List
 class KMeans:
     def __init__(self, num_clusters=8):
         self._num_clusters = num_clusters
+        self.centroids_ = None
         self.labels_ = None
 
     pass
@@ -18,7 +19,7 @@ class KMeans:
         Returns:
             self
         """
-        centroids = self._select_initial_centroids(data)
+        self.centroids_ = self._select_initial_centroids(data)
         # repeat
         #   Form K clusters by assigning each point to its closest centroid
         #   Recompute the centroid of each cluster
