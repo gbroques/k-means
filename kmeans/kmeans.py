@@ -20,13 +20,17 @@ class KMeans:
             self
         """
         self.centroids_ = self._select_initial_centroids(data)
+        self._form_clusters_and_update_centroids(data)
+        percentage_of_points_changed = 100.0
+        while percentage_of_points_changed >= 1.0:
+            previous_labels = self.labels_[:]
+            self._form_clusters_and_update_centroids(data)
+            percentage_of_points_changed = get_percentage_of_points_changed(previous_labels, self.labels_)
+        return self
+
+    def _form_clusters_and_update_centroids(self, data):
         self.labels_ = get_cluster_labels(data, self.centroids_)
         self.centroids_ = get_centroids(data, self.labels_)
-        # repeat
-        #   Form K clusters by assigning each point to its closest centroid
-        #   Recompute the centroid of each cluster
-        # until centroids do not change
-        return self
 
     def _select_initial_centroids(self, data: List[List]) -> List:
         """Select K points as initial centroids.
