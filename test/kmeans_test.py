@@ -33,12 +33,8 @@ class KMeansTest(unittest.TestCase):
         x - Denotes cluster 1
         o - Denotes cluster 2
         """
-        return [[-2, -1],
-                [-1, -2],
-                [-2, -2],
-                [1, 2],
-                [2, 1],
-                [2, 2]]
+        return [[-2, -1], [-1, -2], [-2, -2],
+                [1, 2], [2, 1], [2, 2]]
 
     def test_fit(self):
         seed(1)
