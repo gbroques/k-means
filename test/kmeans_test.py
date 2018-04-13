@@ -3,6 +3,8 @@ from random import seed
 from typing import List
 
 from kmeans import KMeans
+from kmeans.kmeans import get_cluster_label
+from kmeans.kmeans import get_percentage_of_points_changed
 
 
 class KMeansTest(unittest.TestCase):
@@ -51,24 +53,21 @@ class KMeansTest(unittest.TestCase):
         expected_percentage_of_points_changed = 0.0
         previous_labels = [1, 1, 1, 0, 0, 0]
         labels = [1, 1, 1, 0, 0, 0]
-        k_means = KMeans(num_clusters=self.num_clusters)
-        percentage_of_points_changed = k_means._get_percentage_of_points_changed(previous_labels, labels)
+        percentage_of_points_changed = get_percentage_of_points_changed(previous_labels, labels)
         self.assertEqual(expected_percentage_of_points_changed, percentage_of_points_changed)
 
     def test_get_percentage_of_point_changed_with_change(self):
         expected_percentage_of_points_changed = 16.666666667
         previous_labels = [1, 1, 1, 0, 0, 1]
         labels = [1, 1, 1, 0, 0, 0]
-        k_means = KMeans(num_clusters=self.num_clusters)
-        percentage_of_points_changed = k_means._get_percentage_of_points_changed(previous_labels, labels)
+        percentage_of_points_changed = get_percentage_of_points_changed(previous_labels, labels)
         self.assertAlmostEqual(expected_percentage_of_points_changed, percentage_of_points_changed)
 
-    def test_assign_point_to_cluster(self):
-        seed(1)
-        expected_labels = [0]
-        k_means = KMeans(num_clusters=self.num_clusters)
-        k_means._assign_point_to_cluster(self.data[0])
-        self.assertEqual(expected_labels, k_means.labels_)
+    def test_get_cluster_label(self):
+        expected_cluster = 0
+        centroids = [[-1, -2], [2, 1]]
+        cluster = get_cluster_label([-2, -1], centroids)
+        self.assertEqual(expected_cluster, cluster)
 
 
 if __name__ == '__main__':
