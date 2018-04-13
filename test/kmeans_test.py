@@ -63,6 +63,13 @@ class KMeansTest(unittest.TestCase):
         percentage_of_points_changed = k_means._get_percentage_of_points_changed(previous_labels, labels)
         self.assertAlmostEqual(expected_percentage_of_points_changed, percentage_of_points_changed)
 
+    def test_assign_point_to_cluster(self):
+        seed(1)
+        expected_labels = [0]
+        k_means = KMeans(num_clusters=self.num_clusters)
+        k_means._assign_point_to_cluster(self.data[0])
+        self.assertEqual(expected_labels, k_means.labels_)
+
 
 if __name__ == '__main__':
     unittest.main()

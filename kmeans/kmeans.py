@@ -5,10 +5,8 @@ from typing import List
 class KMeans:
     def __init__(self, num_clusters=8):
         self._num_clusters = num_clusters
-        self.centroids_ = None
-        self.labels_ = None
-
-    pass
+        self.centroids_ = []
+        self.labels_ = []
 
     def fit(self, data: List[List]) -> 'KMeans':
         """Cluster the data into k sets.
@@ -38,6 +36,19 @@ class KMeans:
             K initial centroids.
         """
         return sample(data, self._num_clusters)
+
+    def _assign_point_to_cluster(self, point: List) -> None:
+        """Assigns a point to a cluster.
+
+        Updates `labels_` property.
+
+        Args:
+            point: The point to assign to a cluster
+
+        Returns:
+            None
+        """
+        pass
 
     @staticmethod
     def _get_percentage_of_points_changed(previous_labels: List, labels: List) -> float:
