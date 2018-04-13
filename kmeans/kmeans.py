@@ -38,3 +38,21 @@ class KMeans:
             K initial centroids.
         """
         return sample(data, self._num_clusters)
+
+    @staticmethod
+    def _get_percentage_of_points_changed(previous_labels: List, labels: List) -> float:
+        """Get the percentage of points that changed clusters.
+
+        Args:
+            previous_labels: The labels of the points before the update.
+            labels: The labels of the points after the update.
+
+        Returns:
+            The percentage of points that changed clusters.
+        """
+        num_points = len(labels)
+        num_changed = 0
+        for i in range(num_points):
+            if previous_labels[i] != labels[i]:
+                num_changed += 1
+        return num_changed / num_points * 100.0
