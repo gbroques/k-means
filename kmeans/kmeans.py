@@ -43,13 +43,40 @@ class KMeans:
 
 
 def get_centroids(data: List[List], labels: List[int]) -> List[List]:
+    """Compute the centroids for each cluster in the data.
+
+    Args:
+        data: The dataset to compute the centroids for.
+        labels: The labels containing which cluster each point belongs to.
+
+    Returns:
+        The centroids of each cluster.
+    """
     centroids = []
     clusters = list(set(labels))
+    partition = partition_by_cluster(data, labels)
     for cluster in clusters:
-        points_in_cluster = [point[0] for point in zip(data, labels) if point[1] == cluster]
+        points_in_cluster = partition[cluster]
         centroid = get_centroid(points_in_cluster)
         centroids.append(centroid)
     return centroids
+
+
+def partition_by_cluster(data: List[List], labels: List[int]) -> List:
+    """Partition a dataset by which cluster each point belongs to.
+
+    Args:
+        data: The dataset to partition.
+        labels: The label of which cluster each point belongs to.
+
+    Returns:
+        Partitioned dataset by which cluster each point belongs to.
+    """
+    clusters = list(set(labels))
+    partition = [[] for _ in range(len(clusters))]
+    for point, label in zip(data, labels):
+        partition[label].append(point)
+    return partition
 
 
 def get_centroid(cluster: List[List]) -> List:

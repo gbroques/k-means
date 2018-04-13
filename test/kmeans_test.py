@@ -10,6 +10,7 @@ from kmeans.kmeans import get_centroids
 from kmeans.kmeans import get_cluster_label
 from kmeans.kmeans import get_cluster_labels
 from kmeans.kmeans import get_percentage_of_points_changed
+from kmeans.kmeans import partition_by_cluster
 
 
 class KMeansTest(unittest.TestCase):
@@ -91,6 +92,13 @@ class KMeansTest(unittest.TestCase):
         expected_centroid = [3, 2]
         centroid = get_centroid(cluster_of_points)
         self.assertEqual(expected_centroid, centroid)
+
+    def test_partition_by_cluster(self):
+        labels = [0, 0, 0, 1, 1, 1]
+        expected_partition = [[[-2, -1], [-1, -2], [-2, -2]],
+                              [[1, 2], [2, 1], [2, 2]]]
+        partition = partition_by_cluster(self.data, labels)
+        self.assertEqual(expected_partition, partition)
 
 
 if __name__ == '__main__':
