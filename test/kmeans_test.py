@@ -4,6 +4,7 @@ from typing import List
 
 from kmeans import KMeans
 from kmeans.kmeans import get_cluster_label
+from kmeans.kmeans import get_cluster_labels
 from kmeans.kmeans import get_percentage_of_points_changed
 
 
@@ -68,6 +69,12 @@ class KMeansTest(unittest.TestCase):
         centroids = [[-1, -2], [2, 1]]
         cluster = get_cluster_label([-2, -1], centroids)
         self.assertEqual(expected_cluster, cluster)
+
+    def test_get_cluster_labels(self):
+        expected_clusters = [0, 1]
+        centroids = [[-1, -2], [2, 1]]
+        clusters = get_cluster_labels([[-2, -1], [1, 1]], centroids)
+        self.assertEqual(expected_clusters, clusters)
 
 
 if __name__ == '__main__':
