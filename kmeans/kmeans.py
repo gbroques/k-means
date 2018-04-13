@@ -28,6 +28,17 @@ class KMeans:
             percentage_of_points_changed = get_percentage_of_points_changed(previous_labels, self.labels_)
         return self
 
+    def predict(self, data: List[List]) -> List:
+        """Predict the closest cluster each sample belongs to.
+
+        Args:
+            data: Data to predict the clusters for.
+
+        Returns:
+            Predicted cluster each sample belongs to.
+        """
+        return get_cluster_labels(data, self.centroids_)
+
     def _form_clusters_and_update_centroids(self, data):
         self.labels_ = get_cluster_labels(data, self.centroids_)
         self.centroids_ = get_centroids(data, self.labels_)

@@ -45,6 +45,15 @@ class KMeansTest(unittest.TestCase):
         self.assertEqual(expected_labels, k_means.labels_)
         np.testing.assert_almost_equal(expected_centroids, k_means.centroids_)
 
+    def test_predict(self):
+        seed(1)
+        test_samples = [[-3, -3], [3, 3], [-1, -1], [1, 1]]
+        expected_predictions = [0, 1, 0, 1]
+        k_means = KMeans(num_clusters=self.num_clusters)
+        k_means.fit(self.data)
+        predictions = k_means.predict(test_samples)
+        self.assertEqual(expected_predictions, predictions)
+
     def test_fit_with_different_initial_centroids(self):
         seed(0)
         expected_labels = [0, 0, 0, 1, 1, 1]
