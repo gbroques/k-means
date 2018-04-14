@@ -14,6 +14,8 @@ class KMeans:
     def fit(self, data: List[List]) -> 'KMeans':
         """Cluster the data into k sets.
 
+        Stopping Criterion: Repeat until only 1% of points change clusters.
+
         Args:
             data: Data to cluster into k sets.
 
