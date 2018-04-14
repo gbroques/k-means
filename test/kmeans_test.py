@@ -40,10 +40,12 @@ class KMeansTest(unittest.TestCase):
         seed(1)
         expected_labels = [0, 0, 0, 1, 1, 1]
         expected_centroids = [[-1.6666667, -1.6666667], [1.6666667, 1.6666667]]
+        expected_inertia = 2.6666667
         k_means = KMeans(num_clusters=self.num_clusters)
         k_means.fit(self.data)
         self.assertEqual(expected_labels, k_means.labels_)
         np.testing.assert_almost_equal(expected_centroids, k_means.centroids_)
+        self.assertAlmostEqual(expected_inertia, k_means.inertia_)
 
     def test_predict(self):
         seed(1)

@@ -9,6 +9,7 @@ class KMeans:
         self._num_clusters = num_clusters
         self.centroids_ = None
         self.labels_ = None
+        self.inertia_ = None
 
     def fit(self, data: List[List]) -> 'KMeans':
         """Cluster the data into k sets.
@@ -39,9 +40,36 @@ class KMeans:
         """
         return get_cluster_labels(data, self.centroids_)
 
-    def _form_clusters_and_update_centroids(self, data):
+    def _form_clusters_and_update_centroids(self, data: List[List]) -> None:
+        """Form K clusters by assigning each point to its closest centroid,
+        and recompute centroid of each cluster.
+
+        Args:
+            data: The data to cluster.
+
+        Returns:
+            None
+        """
         self.labels_ = get_cluster_labels(data, self.centroids_)
         self.centroids_ = get_centroids(data, self.labels_)
+        self.inertia_ = self._get_inertia(data)
+
+    def _get_inertia(self, data: List[List]) -> float:
+        """Get the sum of squared distances of each sample to their closest centroid.
+
+        Args:
+            data: The dataset.
+
+        Returns:
+            Sum of squared distances of each sample to their closest centroid.
+        """
+        squared_errors = []
+        for i, point in enumerate(data):
+            cluster = self.labels_[i]
+            closest_centroid = self.centroids_[cluster]
+            squared_error = euclidean(point, closest_centroid) ** 2
+            squared_errors.append(squared_error)
+        return sum(squared_errors)
 
     def _select_initial_centroids(self, data: List[List]) -> List:
         """Select K points as initial centroids.
@@ -152,6 +180,6 @@ def get_cluster_label(point: List, centroids: List[List]) -> int:
     Returns:
         The cluster label. This corresponds to the index of the closest centroid.
     """
-    distances_from_centroids = [euclidean(point, centroid) for centroid in centroids]
+    distances_from_centroids = [euclidean(point, centroid) ** 2 for centroid in centroids]
     min_distance = min(distances_from_centroids)
     return distances_from_centroids.index(min_distance)
