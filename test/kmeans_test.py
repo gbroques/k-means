@@ -122,10 +122,12 @@ class KMeansTest(unittest.TestCase):
         self.assertEqual(expected_partition, partition)
 
     def test_get_inertia(self):
-        labels = [0, 0, 0, 1, 1, 1]
-        centroids = [[-1.6666667, -1.6666667], [1.6666667, 1.6666667]]
         expected_inertia = 2.6666667
-        inertia = get_inertia(self.data, labels, centroids)
+        closest_centroids = [
+            [-1.6666667, -1.6666667], [-1.6666667, -1.6666667], [-1.6666667, -1.6666667],
+            [1.6666667, 1.6666667], [1.6666667, 1.6666667], [1.6666667, 1.6666667]
+        ]
+        inertia = get_inertia(self.data, closest_centroids)
         self.assertAlmostEqual(expected_inertia, inertia)
 
     def test_get_closest_centroids_from_labels(self):

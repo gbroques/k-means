@@ -34,6 +34,10 @@ class KMeans:
             percentage_of_points_changed = get_percentage_of_points_changed(previous_labels, self.labels_)
         return self
 
+    def _get_inertia(self, data: List[List]) -> float:
+        closest_centroids = get_closest_centroids_from_labels(data, self.centroids_, self.labels_)
+        return get_inertia(data, closest_centroids)
+
     def predict(self, data: List[List]) -> List:
         """Predict the closest cluster each sample belongs to.
 
@@ -57,7 +61,7 @@ class KMeans:
         """
         self.labels_ = get_cluster_labels(data, self.centroids_)
         self.centroids_ = get_centroids(data, self.labels_)
-        self.inertia_ = get_inertia(data, self.labels_, self.centroids_)
+        self.inertia_ = self._get_inertia(data)
 
     def _select_initial_centroids(self, data: List[List]) -> List:
         """Select K points as initial centroids.
@@ -173,21 +177,18 @@ def get_cluster_label(point: List, centroids: List[List]) -> int:
     return distances_from_centroids.index(min_distance)
 
 
-def get_inertia(data: List[List], labels: List[int], centroids: List[List]) -> float:
+def get_inertia(data: List[List], closest_centroids: List[List]) -> float:
     """Get the sum of squared distances of each sample to their closest centroid.
 
     Args:
         data: Dataset.
-        labels: Which cluster each point belongs to.
-        centroids: The center point of each cluster.
+        closest_centroids: The closest centroid for each point.
 
     Returns:
         Sum of squared distances of each sample to their closest centroid.
     """
     squared_errors = []
-    for i, point in enumerate(data):
-        cluster = labels[i]
-        closest_centroid = centroids[cluster]
+    for point, closest_centroid in zip(data, closest_centroids):
         squared_error = euclidean(point, closest_centroid) ** 2
         squared_errors.append(squared_error)
     return sum(squared_errors)
