@@ -230,3 +230,14 @@ def get_closest_centroids_from_labels(data: List[List], centroids: List[List], l
         closest_centroid = centroids[label]
         closest_centroids.append(closest_centroid)
     return closest_centroids
+
+
+def get_inertia_per_cluster(data: List[List], centroids: List[List], labels: List[int]) -> List[float]:
+    inertia_per_cluster = []
+    partitioned_data = partition_by_cluster(data, labels)
+    closest_centroids = get_closest_centroids_from_labels(data, centroids, labels)
+    partitioned_closest_centroids = partition_by_cluster(closest_centroids, labels)
+    for data_per_cluster, closest_centroids_per_cluster in zip(partitioned_data, partitioned_closest_centroids):
+        cluster_inertia = get_inertia(data_per_cluster, closest_centroids_per_cluster)
+        inertia_per_cluster.append(cluster_inertia)
+    return inertia_per_cluster

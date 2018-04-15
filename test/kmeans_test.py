@@ -12,6 +12,7 @@ from kmeans.kmeans import get_closest_centroids_from_labels
 from kmeans.kmeans import get_cluster_label
 from kmeans.kmeans import get_cluster_labels
 from kmeans.kmeans import get_inertia
+from kmeans.kmeans import get_inertia_per_cluster
 from kmeans.kmeans import get_percentage_of_points_changed
 from kmeans.kmeans import partition_by_cluster
 
@@ -148,6 +149,13 @@ class KMeansTest(unittest.TestCase):
         centroids = [[-1.6666667, -1.6666667], [1.6666667, 1.6666667]]
         closest_centroids = get_closest_centroids(self.data, centroids)
         self.assertAlmostEqual(expected_closest_centroids, closest_centroids)
+
+    def test_get_inertia_per_cluster(self):
+        centroids = [[-1.6666667, -1.6666667], [1.6666667, 1.6666667]]
+        labels = [0, 0, 0, 1, 1, 1]
+        expected_inertia_per_cluster = [1.3333333, 1.3333333]
+        inertia_per_cluster = get_inertia_per_cluster(self.data, centroids, labels)
+        np.testing.assert_almost_equal(expected_inertia_per_cluster, inertia_per_cluster)
 
 
 if __name__ == '__main__':
