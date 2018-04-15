@@ -57,24 +57,7 @@ class KMeans:
         """
         self.labels_ = get_cluster_labels(data, self.centroids_)
         self.centroids_ = get_centroids(data, self.labels_)
-        self.inertia_ = self._get_inertia(data)
-
-    def _get_inertia(self, data: List[List]) -> float:
-        """Get the sum of squared distances of each sample to their closest centroid.
-
-        Args:
-            data: The dataset.
-
-        Returns:
-            Sum of squared distances of each sample to their closest centroid.
-        """
-        squared_errors = []
-        for i, point in enumerate(data):
-            cluster = self.labels_[i]
-            closest_centroid = self.centroids_[cluster]
-            squared_error = euclidean(point, closest_centroid) ** 2
-            squared_errors.append(squared_error)
-        return sum(squared_errors)
+        self.inertia_ = get_inertia(data, self.labels_, self.centroids_)
 
     def _select_initial_centroids(self, data: List[List]) -> List:
         """Select K points as initial centroids.
@@ -188,3 +171,61 @@ def get_cluster_label(point: List, centroids: List[List]) -> int:
     distances_from_centroids = [euclidean(point, centroid) ** 2 for centroid in centroids]
     min_distance = min(distances_from_centroids)
     return distances_from_centroids.index(min_distance)
+
+
+def get_inertia(data: List[List], labels: List[int], centroids: List[List]) -> float:
+    """Get the sum of squared distances of each sample to their closest centroid.
+
+    Args:
+        data: Dataset.
+        labels: Which cluster each point belongs to.
+        centroids: The center point of each cluster.
+
+    Returns:
+        Sum of squared distances of each sample to their closest centroid.
+    """
+    squared_errors = []
+    for i, point in enumerate(data):
+        cluster = labels[i]
+        closest_centroid = centroids[cluster]
+        squared_error = euclidean(point, closest_centroid) ** 2
+        squared_errors.append(squared_error)
+    return sum(squared_errors)
+
+
+def get_closest_centroids(data: List[List], centroids: List[List]) -> List[List]:
+    """Get the closest centroid for each point in the dataset.
+
+    Args:
+        data: The dataset.
+        centroids: The center point of each cluster.
+
+    Returns:
+        The closest centroid for each point in the dataset.
+    """
+    closest_centroids = []
+    cluster_labels = get_cluster_labels(data, centroids)
+    for point, cluster_label in zip(data, cluster_labels):
+        closest_centroid = centroids[cluster_label]
+        closest_centroids.append(closest_centroid)
+    return closest_centroids
+
+
+def get_closest_centroids_from_labels(data: List[List], centroids: List[List], labels: List[int]) -> List[List]:
+    """Get the closest centroid for each point in the dataset using the cluster labels.
+
+    Less computationally expensive than get_closest_centroids.
+
+    Args:
+        data: The dataset.
+        centroids: The center point of each cluster.
+        labels: The cluster each point in the dataset belongs to.
+
+    Returns:
+        The closest centroid for each point in the dataset.
+    """
+    closest_centroids = []
+    for point, label in zip(data, labels):
+        closest_centroid = centroids[label]
+        closest_centroids.append(closest_centroid)
+    return closest_centroids

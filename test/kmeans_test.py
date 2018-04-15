@@ -7,8 +7,11 @@ import numpy as np
 from kmeans import KMeans
 from kmeans.kmeans import get_centroid
 from kmeans.kmeans import get_centroids
+from kmeans.kmeans import get_closest_centroids
+from kmeans.kmeans import get_closest_centroids_from_labels
 from kmeans.kmeans import get_cluster_label
 from kmeans.kmeans import get_cluster_labels
+from kmeans.kmeans import get_inertia
 from kmeans.kmeans import get_percentage_of_points_changed
 from kmeans.kmeans import partition_by_cluster
 
@@ -117,6 +120,32 @@ class KMeansTest(unittest.TestCase):
                               [[1, 2], [2, 1], [2, 2]]]
         partition = partition_by_cluster(self.data, labels)
         self.assertEqual(expected_partition, partition)
+
+    def test_get_inertia(self):
+        labels = [0, 0, 0, 1, 1, 1]
+        centroids = [[-1.6666667, -1.6666667], [1.6666667, 1.6666667]]
+        expected_inertia = 2.6666667
+        inertia = get_inertia(self.data, labels, centroids)
+        self.assertAlmostEqual(expected_inertia, inertia)
+
+    def test_get_closest_centroids_from_labels(self):
+        expected_closest_centroids = [
+            [-1.6666667, -1.6666667], [-1.6666667, -1.6666667], [-1.6666667, -1.6666667],
+            [1.6666667, 1.6666667], [1.6666667, 1.6666667], [1.6666667, 1.6666667]
+        ]
+        centroids = [[-1.6666667, -1.6666667], [1.6666667, 1.6666667]]
+        labels = [0, 0, 0, 1, 1, 1]
+        closest_centroids = get_closest_centroids_from_labels(self.data, centroids, labels)
+        self.assertAlmostEqual(expected_closest_centroids, closest_centroids)
+
+    def test_get_closest_centroids(self):
+        expected_closest_centroids = [
+            [-1.6666667, -1.6666667], [-1.6666667, -1.6666667], [-1.6666667, -1.6666667],
+            [1.6666667, 1.6666667], [1.6666667, 1.6666667], [1.6666667, 1.6666667]
+        ]
+        centroids = [[-1.6666667, -1.6666667], [1.6666667, 1.6666667]]
+        closest_centroids = get_closest_centroids(self.data, centroids)
+        self.assertAlmostEqual(expected_closest_centroids, closest_centroids)
 
 
 if __name__ == '__main__':
