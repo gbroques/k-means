@@ -2,7 +2,7 @@ from math import cos
 from math import pi
 from math import sin
 from random import random
-from typing import List
+from typing import List, Tuple
 
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -10,7 +10,7 @@ import seaborn as sns
 
 
 def plot_clusters(clusters: List[List], labels: List[int]) -> None:
-    """Plot custer data.
+    """Plot cluster data.
 
     Args:
         clusters: Cluster data to plot.
@@ -26,7 +26,11 @@ def plot_clusters(clusters: List[List], labels: List[int]) -> None:
     plt.show()
 
 
-def generate_clusters(num_clusters, num_points, spread, bound_for_x, bound_for_y) -> List[List]:
+def generate_clusters(num_clusters: int,
+                      num_points: int,
+                      spread: float,
+                      bound_for_x: Tuple[float, float],
+                      bound_for_y: Tuple[float, float]) -> List[List]:
     """Generate random data for clustering.
 
     Source:
@@ -52,7 +56,7 @@ def generate_clusters(num_clusters, num_points, spread, bound_for_x, bound_for_y
     return clusters
 
 
-def generate_cluster(num_points, center, spread) -> List[List]:
+def generate_cluster(num_points: int, center: Tuple[float, float], spread: float) -> List[List]:
     """Generates a cluster of random points.
 
     Source:
