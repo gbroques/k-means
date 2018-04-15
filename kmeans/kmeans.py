@@ -27,7 +27,10 @@ class KMeans:
         percentage_of_points_changed = 100.0
         while percentage_of_points_changed >= 1.0:
             previous_labels = self.labels_[:]
-            self._form_clusters_and_update_centroids(data)
+            for i, point in enumerate(data):
+                self.labels_[i] = get_cluster_label(point, self.centroids_)
+                self.centroids_ = get_centroids(data, self.labels_)
+            self.inertia_ = self._get_inertia(data)
             percentage_of_points_changed = get_percentage_of_points_changed(previous_labels, self.labels_)
         return self
 
