@@ -15,6 +15,7 @@ class BisectingKMeans:
         self.centroids_ = None
         self.labels_ = None
         self.inertia_ = None
+        self.inertia_per_cluster_ = None
 
     def fit(self, data: List[List]) -> 'BisectingKMeans':
         clusters = [data]
@@ -35,6 +36,7 @@ class BisectingKMeans:
         self.centroids_ = get_centroids(clusters)
         self.labels_ = get_labels(clusters)
         self.inertia_ = get_total_inertia(clusters, self.centroids_)
+        self.inertia_per_cluster_ = get_inertia_per_cluster(clusters, self.centroids_)
         return self
 
 
