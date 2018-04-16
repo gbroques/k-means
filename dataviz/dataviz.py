@@ -48,11 +48,12 @@ def generate_clusters(num_clusters: int,
     """
     x_min, x_max = bound_for_x
     y_min, y_max = bound_for_y
+    num_points_per_cluster = int(num_points / num_clusters)
     clusters = []
     for _ in range(num_clusters):
         x = x_min + (x_max - x_min) * random()
         y = y_min + (y_max - y_min) * random()
-        clusters.extend(generate_cluster(num_points, (x, y), spread))
+        clusters.extend(generate_cluster(num_points_per_cluster, (x, y), spread))
     return clusters
 
 
