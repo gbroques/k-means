@@ -27,6 +27,25 @@ class BisectingKMeansTest(unittest.TestCase):
                 [1, 2], [2, 1], [2, 2]]
 
     @staticmethod
+    def get_two_clusters_with_even_centers() -> List[List]:
+        """Two clusters with even centers in a 2-dimensional plane.
+        Useful for nice centroid points.
+              ^
+              | x x
+              | x x
+        <-----+----->
+          o o |
+          o o |
+              v
+        x - Denotes cluster 1
+        o - Denotes cluster 2
+
+        Optimal centroids are located at (2, 2) and (-2, -2).
+        """
+        return [[-3, -1], [-1, -1], [-3, -3], [-1, -3],
+                [1, 1], [1, 3], [3, 1], [3, 3]]
+
+    @staticmethod
     def get_four_clusters() -> List[List]:
         """Four clusters in a 2-dimensional plane.
         ^
@@ -72,6 +91,20 @@ class BisectingKMeansTest(unittest.TestCase):
         k_means = BisectingKMeans(num_clusters=4)
         data = self.get_four_clusters()
         k_means.fit(data)
+        self.assertEqual(expected_labels, k_means.labels_)
+        np.testing.assert_almost_equal(expected_centroids, k_means.centroids_)
+        self.assertAlmostEqual(expected_inertia, k_means.inertia_)
+        np.testing.assert_almost_equal(expected_inertia_per_cluster, k_means.inertia_per_cluster_)
+        self.assertAlmostEqual(sum(k_means.inertia_per_cluster_), k_means.inertia_)
+
+    def test_manhattan_distance(self):
+        seed(1)
+        expected_labels = [0, 0, 0, 0, 1, 1, 1, 1]
+        expected_centroids = [[2, 2], [-2, -2]]
+        expected_inertia = 16
+        expected_inertia_per_cluster = [8, 8]
+        k_means = BisectingKMeans(num_clusters=2, distance_function='manhattan')
+        k_means.fit(self.get_two_clusters_with_even_centers())
         self.assertEqual(expected_labels, k_means.labels_)
         np.testing.assert_almost_equal(expected_centroids, k_means.centroids_)
         self.assertAlmostEqual(expected_inertia, k_means.inertia_)

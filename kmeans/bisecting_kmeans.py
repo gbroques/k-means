@@ -8,9 +8,10 @@ from .kmeans import partition_by_cluster
 
 class BisectingKMeans:
 
-    def __init__(self, num_clusters: int, num_trials: int = 10):
+    def __init__(self, num_clusters: int, num_trials: int = 10, distance_function='euclidean'):
         self._num_clusters = num_clusters
         self._num_trials = num_trials
+        self._distance_function = distance_function
         self.centroids_ = None
         self.labels_ = None
         self.inertia_ = None
@@ -20,7 +21,7 @@ class BisectingKMeans:
         clusters = [data]
         self.centroids_ = get_centroids(clusters)
         while len(clusters) != self._num_clusters:
-            cluster = select_cluster(clusters, self.centroids_)
+            cluster = select_cluster(clusters, self.centroids_, self._distance_function)
             clusters.remove(cluster)
 
             trial_results = {}
@@ -34,34 +35,37 @@ class BisectingKMeans:
             clusters.extend(best_two_clusters)
         self.centroids_ = get_centroids(clusters)
         self.labels_ = get_labels(clusters)
-        self.inertia_ = get_total_inertia(clusters, self.centroids_)
-        self.inertia_per_cluster_ = get_inertia_per_cluster(clusters, self.centroids_)
+        self.inertia_ = get_total_inertia(clusters, self.centroids_, self._distance_function)
+        self.inertia_per_cluster_ = get_inertia_per_cluster(clusters, self.centroids_, self._distance_function)
         return self
 
 
-def select_cluster(clusters: List[List[List]], centroids: List[List]) -> List[List]:
+def select_cluster(clusters: List[List[List]], centroids: List[List], distance_function: str = None) -> List[List]:
     """Select a cluster to bisect based upon minimizing the sum of squared errors (SSE).
 
     Args:
         clusters: A list of clusters.
         centroids: The center points of each cluster.
+        distance_function: Whether to use euclidean or manhattan distance.
+                           Defaults to euclidean distance.
 
     Returns:
         The cluster to bisect.
     """
-    inertia_per_cluster = get_inertia_per_cluster(clusters, centroids)
+    inertia_per_cluster = get_inertia_per_cluster(clusters, centroids, distance_function)
     max_inertia = max(inertia_per_cluster)
     index = inertia_per_cluster.index(max_inertia)
     return clusters[index]
 
 
-def get_total_inertia(clusters: List[List[List]], centroids: List[List]) -> float:
+def get_total_inertia(clusters: List[List[List]], centroids: List[List], distance_function: str = None) -> float:
     """Get the total sum of squared errors for each cluster.
 
     Args:
         clusters: A list of clusters.
         centroids: The center point of each cluster.
-
+        distance_function: Whether to use euclidean or manhattan distance.
+                           Defaults to euclidean distance.
     Returns:
         The total sum of squared errors.
     """
@@ -69,19 +73,23 @@ def get_total_inertia(clusters: List[List[List]], centroids: List[List]) -> floa
     return sum(inertia_per_cluster)
 
 
-def get_inertia_per_cluster(clusters: List[List[List]], centroids: List[List]) -> List[float]:
+def get_inertia_per_cluster(clusters: List[List[List]],
+                            centroids: List[List],
+                            distance_function: str = None) -> List[float]:
     """Get the sum of squared errors for each cluster.
 
     Args:
         clusters: A list of clusters.
         centroids: The center point of each cluster.
+        distance_function: Whether to use euclidean or manhattan distance.
+                           Defaults to euclidean distance.
 
     Returns:
         The sum of squared errors for each cluster.
     """
     inertia_per_cluster = []
     for cluster, centroid in zip(clusters, centroids):
-        cluster_inertia = get_inertia_for_one_cluster(cluster, centroid)
+        cluster_inertia = get_inertia_for_one_cluster(cluster, centroid, distance_function)
         inertia_per_cluster.append(cluster_inertia)
     return inertia_per_cluster
 
