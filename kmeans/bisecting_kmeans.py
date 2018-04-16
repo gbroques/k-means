@@ -1,8 +1,7 @@
 from typing import List
 
-from scipy.spatial.distance import euclidean
-
 from .kmeans import KMeans
+from .kmeans import distance
 from .kmeans import get_centroids
 from .kmeans import partition_by_cluster
 
@@ -87,24 +86,34 @@ def get_inertia_per_cluster(clusters: List[List[List]], centroids: List[List]) -
     return inertia_per_cluster
 
 
-def get_inertia_for_one_cluster(cluster: List[List], centroid: List[float]):
-    """Get the sum of squared error for one cluster.
+def get_inertia_for_one_cluster(cluster: List[List], centroid: List[float], distance_function: str = None):
+    """Get the sum of the distances from each point in the cluster to the centroid.
 
     Args:
         cluster: A cluster of points.
         centroid: The center point of the cluster.
+        distance_function: Whether to use euclidean or manhattan distance.
+                           Defaults to euclidean distance.
 
     Returns:
-        The sum squared error for the cluster.
+        The sum of the distances from each point in the cluster to the centroid.
     """
-    squared_errors = []
+    errors = []
     for point in cluster:
-        squared_error = euclidean(point, centroid) ** 2
-        squared_errors.append(squared_error)
-    return sum(squared_errors)
+        error = distance(point, centroid, func=distance_function)
+        errors.append(error)
+    return sum(errors)
 
 
 def get_labels(clusters: List[List[List]]) -> List[int]:
+    """Get the label of each cluster.
+
+    Args:
+        clusters: A list of clusters.
+
+    Returns:
+        A list of labels.
+    """
     labels = []
     for i, cluster in enumerate(clusters):
         labels.extend([i for _ in range(len(cluster))])

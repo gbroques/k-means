@@ -1,13 +1,15 @@
 from random import sample
 from typing import List
 
+from scipy.spatial.distance import cityblock
 from scipy.spatial.distance import euclidean
 
 
 class KMeans:
 
-    def __init__(self, num_clusters=8):
+    def __init__(self, num_clusters=8, distance_function='euclidean'):
         self._num_clusters = num_clusters
+        self._distance_function = distance_function
         self.centroids_ = None
         self.labels_ = None
         self.inertia_ = None
@@ -157,53 +159,68 @@ def get_percentage_of_points_changed(previous_labels: List, labels: List) -> flo
     return num_changed / num_points * 100.0
 
 
-def get_cluster_labels(data: List[List], centroids: List[List]) -> List[int]:
+def get_cluster_labels(data: List[List], centroids: List[List], distance_function: str = None) -> List[int]:
     """Gets the cluster label for a set of points.
 
     Args:
         data: A set of points. The dataset.
         centroids: The center of each cluster.
+        distance_function: Whether to use euclidean or manhattan distance.
+                           Defaults to euclidean distance.
 
     Returns:
         A list of cluster labels. Corresponds to the index of the closest centroid.
     """
     cluster_labels = []
     for point in data:
-        cluster_label = get_cluster_label(point, centroids)
+        cluster_label = get_cluster_label(point, centroids, distance_function)
         cluster_labels.append(cluster_label)
     return cluster_labels
 
 
-def get_cluster_label(point: List, centroids: List[List]) -> int:
+def get_cluster_label(point: List, centroids: List[List], distance_function: str = None) -> int:
     """Gets the cluster label of a point.
 
     Args:
         point: The point to calculate which cluster it belongs to.
         centroids: The center of each cluster.
+        distance_function: Whether to use euclidean or manhattan distance.
+                           Defaults to euclidean distance.
 
     Returns:
         The cluster label. This corresponds to the index of the closest centroid.
     """
-    distances_from_centroids = [euclidean(point, centroid) ** 2 for centroid in centroids]
+    distances_from_centroids = [distance(point, centroid, func=distance_function) for centroid in centroids]
     min_distance = min(distances_from_centroids)
     return distances_from_centroids.index(min_distance)
 
 
-def get_inertia(data: List[List], closest_centroids: List[List]) -> float:
-    """Get the sum of squared distances of each sample to their closest centroid.
+def distance(a: List[float], b: List[float], func='euclidean') -> float:
+    if func == 'euclidean' or func is None:
+        return euclidean(a, b) ** 2
+    elif func == 'manhattan':
+        return cityblock(a, b)
+    else:
+        raise ValueError('Invalid distance function {}.'.format(func))
+
+
+def get_inertia(data: List[List], closest_centroids: List[List], distance_function: str = None) -> float:
+    """Get the sum of distances of each sample to their closest centroid.
 
     Args:
         data: Dataset.
         closest_centroids: The closest centroid for each point.
+        distance_function: Whether to use euclidean or manhattan distance.
+                           Defaults to euclidean distance.
 
     Returns:
         Sum of squared distances of each sample to their closest centroid.
     """
-    squared_errors = []
+    errors = []
     for point, closest_centroid in zip(data, closest_centroids):
-        squared_error = euclidean(point, closest_centroid) ** 2
-        squared_errors.append(squared_error)
-    return sum(squared_errors)
+        error = distance(point, closest_centroid, func=distance_function)
+        errors.append(error)
+    return sum(errors)
 
 
 def get_closest_centroids(data: List[List], centroids: List[List]) -> List[List]:
