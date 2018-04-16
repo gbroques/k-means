@@ -14,6 +14,7 @@ from kmeans.kmeans import get_cluster_labels
 from kmeans.kmeans import get_inertia
 from kmeans.kmeans import get_inertia_per_cluster
 from kmeans.kmeans import get_percentage_of_points_changed
+from kmeans.kmeans import partition_and_get_centroids
 from kmeans.kmeans import partition_by_cluster
 
 
@@ -103,11 +104,19 @@ class KMeansTest(unittest.TestCase):
         clusters = get_cluster_labels([[-2, -1], [1, 1]], centroids)
         self.assertEqual(expected_clusters, clusters)
 
-    def test_get_centroids(self):
+    def test_partition_and_get_centroids(self):
         labels = [0, 0, 0, 1, 1, 1]
         expected_centroids = [[-1.6666667, -1.6666667], [1.6666667, 1.6666667]]
-        centroids = get_centroids(self.data, labels)
+        centroids = partition_and_get_centroids(self.data, labels)
         np.testing.assert_almost_equal(expected_centroids, centroids)
+
+    def test_get_centroids(self):
+        clusters = [[[-2, -1], [-1, -2], [-2, -2]],
+                    [[1, 2], [2, 1], [2, 2]]]
+        expected_centroids = [[-1.6666667, -1.6666667], [1.6666667, 1.6666667]]
+        centroids = get_centroids(clusters)
+        np.testing.assert_almost_equal(expected_centroids, centroids)
+        self.assertEqual(len(clusters), len(centroids))
 
     def test_get_centroid(self):
         cluster_of_points = [[1, 1], [2, 3], [6, 2]]

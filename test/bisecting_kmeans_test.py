@@ -10,11 +10,6 @@ from kmeans.bisecting_kmeans import select_cluster
 
 class BisectingKMeansTest(unittest.TestCase):
 
-    @classmethod
-    def setUpClass(cls):
-        cls.data = cls.get_two_clusters()
-        cls.num_clusters = 2
-
     @staticmethod
     def get_two_clusters() -> List[List]:
         """Two clusters in a 2-dimensional plane.
@@ -31,22 +26,58 @@ class BisectingKMeansTest(unittest.TestCase):
         return [[-2, -1], [-1, -2], [-2, -2],
                 [1, 2], [2, 1], [2, 2]]
 
-    def test_fit(self):
+    @staticmethod
+    def get_four_clusters() -> List[List]:
+        """Four clusters in a 2-dimensional plane.
+        ^
+        | + +       * *
+        | +           *
+        |
+        | x           o
+        | x x       o o
+        +-------------->
+        x - Denotes cluster 1
+        o - Denotes cluster 2
+        + - Denotes cluster 3
+        * - Denotes cluster 4
+        """
+        return [[1, 1], [1, 2], [2, 1],
+                [6, 1], [7, 1], [7, 2],
+                [1, 4], [1, 5], [2, 5],
+                [6, 5], [7, 4], [7, 5]]
+
+    def test_fit_with_two_cluster(self):
         seed(1)
-        expected_labels = [1, 1, 1, 0, 0, 0]
+        expected_labels = [0, 0, 0, 1, 1, 1]
         expected_centroids = [[1.6666667, 1.6666667], [-1.6666667, -1.6666667]]
         expected_inertia = 2.6666667
-        k_means = BisectingKMeans(num_clusters=self.num_clusters)
-        k_means.fit(self.data)
+        k_means = BisectingKMeans(num_clusters=2)
+        k_means.fit(self.get_two_clusters())
+        self.assertEqual(expected_labels, k_means.labels_)
+        np.testing.assert_almost_equal(expected_centroids, k_means.centroids_)
+        self.assertAlmostEqual(expected_inertia, k_means.inertia_)
+
+    def test_fit_with_four_cluster(self):
+        seed(1)
+        expected_labels = [0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3]
+        expected_centroids = [[6.66666667, 4.66666667],
+                              [6.66666667, 1.33333333],
+                              [1.33333333, 1.33333333],
+                              [1.33333333, 4.66666667]]
+        expected_inertia = 5.333333333333334
+        k_means = BisectingKMeans(num_clusters=4)
+        data = self.get_four_clusters()
+        k_means.fit(data)
         self.assertEqual(expected_labels, k_means.labels_)
         np.testing.assert_almost_equal(expected_centroids, k_means.centroids_)
         self.assertAlmostEqual(expected_inertia, k_means.inertia_)
 
     def test_select_cluster(self):
-        labels = [0, 0, 1, 1, 1, 1]
         centroids = [[-1.5, -1.5], [0.75, 0.75]]
-        expected_cluster = 1
-        cluster = select_cluster(self.data, centroids, labels)
+        expected_cluster = [[1, 2], [2, 1], [2, 2]]
+        clusters = [[[-2, -1], [-1, -2], [-2, -2]],
+                    [[1, 2], [2, 1], [2, 2]]]
+        cluster = select_cluster(clusters, centroids)
         self.assertEqual(expected_cluster, cluster)
 
 

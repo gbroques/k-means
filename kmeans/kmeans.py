@@ -5,6 +5,7 @@ from scipy.spatial.distance import euclidean
 
 
 class KMeans:
+
     def __init__(self, num_clusters=8):
         self._num_clusters = num_clusters
         self.centroids_ = None
@@ -29,7 +30,7 @@ class KMeans:
             previous_labels = self.labels_[:]
             for i, point in enumerate(data):
                 self.labels_[i] = get_cluster_label(point, self.centroids_)
-                self.centroids_ = get_centroids(data, self.labels_)
+                self.centroids_ = partition_and_get_centroids(data, self.labels_)
             self.inertia_ = self._get_inertia(data)
             percentage_of_points_changed = get_percentage_of_points_changed(previous_labels, self.labels_)
         return self
@@ -60,7 +61,7 @@ class KMeans:
             None
         """
         self.labels_ = get_cluster_labels(data, self.centroids_)
-        self.centroids_ = get_centroids(data, self.labels_)
+        self.centroids_ = partition_and_get_centroids(data, self.labels_)
         self.inertia_ = self._get_inertia(data)
 
     def _select_initial_centroids(self, data: List[List]) -> List:
@@ -77,8 +78,8 @@ class KMeans:
         return sample(data, self._num_clusters)
 
 
-def get_centroids(data: List[List], labels: List[int]) -> List[List]:
-    """Compute the centroids for each cluster in the data.
+def partition_and_get_centroids(data: List[List], labels: List[int]) -> List[List]:
+    """Partition by cluster anc compute the centroids for each cluster in the data.
 
     Args:
         data: The dataset to compute the centroids for.
@@ -87,11 +88,22 @@ def get_centroids(data: List[List], labels: List[int]) -> List[List]:
     Returns:
         The centroids of each cluster.
     """
-    centroids = []
-    clusters = list(set(labels))
     partition = partition_by_cluster(data, labels)
-    for cluster in clusters:
-        points_in_cluster = partition[cluster]
+    return get_centroids(partition)
+
+
+def get_centroids(clusters: List[List]) -> List[List]:
+    """Compute the centroids for a list of clusters.
+
+    Args:
+        clusters: A list of clusters.
+
+    Returns:
+        The center point of each cluster.
+    """
+    centroids = []
+    for cluster in range(len(clusters)):
+        points_in_cluster = clusters[cluster]
         centroid = get_centroid(points_in_cluster)
         centroids.append(centroid)
     return centroids
@@ -233,6 +245,16 @@ def get_closest_centroids_from_labels(data: List[List], centroids: List[List], l
 
 
 def get_inertia_per_cluster(data: List[List], centroids: List[List], labels: List[int]) -> List[float]:
+    """Get the sum of squared error for each cluster.
+
+    Args:
+        data: The dataset.
+        centroids: The center point for each cluster.
+        labels: The cluster each point belongs to.
+
+    Returns:
+        The sum of squared error for each cluster.
+    """
     inertia_per_cluster = []
     partitioned_data = partition_by_cluster(data, labels)
     closest_centroids = get_closest_centroids_from_labels(data, centroids, labels)
