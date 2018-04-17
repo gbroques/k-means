@@ -1,4 +1,5 @@
 from random import sample
+from random import seed
 from typing import List
 
 from scipy.spatial.distance import cityblock
@@ -7,9 +8,10 @@ from scipy.spatial.distance import euclidean
 
 class KMeans:
 
-    def __init__(self, num_clusters=8, distance_function='euclidean'):
+    def __init__(self, num_clusters=8, distance_function='euclidean', random_state=None):
         self._num_clusters = num_clusters
         self._distance_function = distance_function
+        self._random_state = random_state
         self.centroids_ = None
         self.labels_ = None
         self.inertia_ = None
@@ -25,6 +27,7 @@ class KMeans:
         Returns:
             self
         """
+        seed(self._random_state)
         self.centroids_ = self._select_initial_centroids(data)
         self._form_clusters_and_update_centroids(data)
         percentage_of_points_changed = 100.0
