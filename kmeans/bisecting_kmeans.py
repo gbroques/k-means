@@ -1,3 +1,4 @@
+from random import Random
 from typing import List
 
 from .kmeans import KMeans
@@ -8,10 +9,11 @@ from .kmeans import partition_by_cluster
 
 class BisectingKMeans:
 
-    def __init__(self, num_clusters: int, num_trials: int = 10, distance_function='euclidean'):
+    def __init__(self, num_clusters: int, num_trials: int = 10, distance_function='euclidean', random_state=None):
         self._num_clusters = num_clusters
         self._num_trials = num_trials
         self._distance_function = distance_function
+        self._random = Random(random_state)
         self.centroids_ = None
         self.labels_ = None
         self.inertia_ = None
@@ -26,7 +28,8 @@ class BisectingKMeans:
 
             trial_results = {}
             for i in range(self._num_trials):
-                k_means = KMeans(num_clusters=2)
+                random_state = self._random.random()
+                k_means = KMeans(num_clusters=2, random_state=random_state)
                 k_means.fit(cluster)
                 trial_results[k_means.inertia_] = k_means
             best_trial = min(trial_results)

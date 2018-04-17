@@ -66,12 +66,11 @@ class BisectingKMeansTest(unittest.TestCase):
                 [6, 5], [7, 4], [7, 5]]
 
     def test_fit_with_two_cluster(self):
-        seed(1)
         expected_labels = [0, 0, 0, 1, 1, 1]
         expected_centroids = [[1.6666667, 1.6666667], [-1.6666667, -1.6666667]]
         expected_inertia = 2.6666667
         expected_inertia_per_cluster = [1.3333333, 1.3333333]
-        k_means = BisectingKMeans(num_clusters=2)
+        k_means = BisectingKMeans(num_clusters=2, random_state=1)
         k_means.fit(self.get_two_clusters())
         self.assertEqual(expected_labels, k_means.labels_)
         np.testing.assert_almost_equal(expected_centroids, k_means.centroids_)
@@ -80,7 +79,6 @@ class BisectingKMeansTest(unittest.TestCase):
         self.assertAlmostEqual(sum(k_means.inertia_per_cluster_), k_means.inertia_)
 
     def test_fit_with_four_cluster(self):
-        seed(1)
         expected_labels = [0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3]
         expected_centroids = [[6.66666667, 4.66666667],
                               [6.66666667, 1.33333333],
@@ -88,7 +86,7 @@ class BisectingKMeansTest(unittest.TestCase):
                               [1.33333333, 4.66666667]]
         expected_inertia = 5.333333333333334
         expected_inertia_per_cluster = [1.3333333, 1.3333333, 1.3333333, 1.3333333]
-        k_means = BisectingKMeans(num_clusters=4)
+        k_means = BisectingKMeans(num_clusters=4, random_state=1)
         data = self.get_four_clusters()
         k_means.fit(data)
         self.assertEqual(expected_labels, k_means.labels_)
@@ -98,12 +96,11 @@ class BisectingKMeansTest(unittest.TestCase):
         self.assertAlmostEqual(sum(k_means.inertia_per_cluster_), k_means.inertia_)
 
     def test_manhattan_distance(self):
-        seed(1)
         expected_labels = [0, 0, 0, 0, 1, 1, 1, 1]
         expected_centroids = [[2, 2], [-2, -2]]
         expected_inertia = 16
         expected_inertia_per_cluster = [8, 8]
-        k_means = BisectingKMeans(num_clusters=2, distance_function='manhattan')
+        k_means = BisectingKMeans(num_clusters=2, distance_function='manhattan', random_state=1)
         k_means.fit(self.get_two_clusters_with_even_centers())
         self.assertEqual(expected_labels, k_means.labels_)
         np.testing.assert_almost_equal(expected_centroids, k_means.centroids_)
