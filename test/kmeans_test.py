@@ -44,7 +44,7 @@ class KMeansTest(unittest.TestCase):
         expected_labels = [0, 0, 0, 1, 1, 1]
         expected_centroids = [[-1.6666667, -1.6666667], [1.6666667, 1.6666667]]
         expected_inertia = 2.6666667
-        k_means = KMeans(num_clusters=self.num_clusters, random_state=1)
+        k_means = KMeans(num_clusters=self.num_clusters, seed=1)
         k_means.fit(self.data)
         self.assertEqual(expected_labels, k_means.labels_)
         np.testing.assert_almost_equal(expected_centroids, k_means.centroids_)
@@ -53,7 +53,7 @@ class KMeansTest(unittest.TestCase):
     def test_predict(self):
         test_samples = [[-3, -3], [3, 3], [-1, -1], [1, 1]]
         expected_predictions = [0, 1, 0, 1]
-        k_means = KMeans(num_clusters=self.num_clusters, random_state=1)
+        k_means = KMeans(num_clusters=self.num_clusters, seed=1)
         k_means.fit(self.data)
         predictions = k_means.predict(test_samples)
         self.assertEqual(expected_predictions, predictions)
@@ -61,14 +61,14 @@ class KMeansTest(unittest.TestCase):
     def test_fit_with_different_initial_centroids(self):
         expected_labels = [0, 0, 0, 1, 1, 1]
         expected_centroids = [[-1.6666667, -1.6666667], [1.6666667, 1.6666667]]
-        k_means = KMeans(num_clusters=self.num_clusters, random_state=0)
+        k_means = KMeans(num_clusters=self.num_clusters, seed=0)
         k_means.fit(self.data)
         self.assertEqual(expected_labels, k_means.labels_)
         np.testing.assert_almost_equal(expected_centroids, k_means.centroids_)
 
     def test_select_initial_centroids(self):
         expected_initial_centroids = [[2, 1], [-1, -2]]
-        k_means = KMeans(num_clusters=self.num_clusters, random_state=3)
+        k_means = KMeans(num_clusters=self.num_clusters, seed=3)
         k_means.fit(self.data)
         initial_centroids = k_means._select_initial_centroids(self.data)
         self.assertEqual(expected_initial_centroids, initial_centroids)
@@ -166,7 +166,7 @@ class KMeansTest(unittest.TestCase):
         expected_labels = [0, 0, 0, 1, 1, 1]
         expected_centroids = [[-1.6666667, -1.6666667], [1.6666667, 1.6666667]]
         expected_inertia = 2.6666667
-        k_means = KMeans(num_clusters=self.num_clusters, distance_function='manhattan', random_state=1)
+        k_means = KMeans(num_clusters=self.num_clusters, distance_function='manhattan', seed=1)
         k_means.fit(self.data)
         self.assertEqual(expected_labels, k_means.labels_)
         np.testing.assert_almost_equal(expected_centroids, k_means.centroids_)

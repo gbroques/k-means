@@ -7,10 +7,10 @@ from scipy.spatial.distance import euclidean
 
 class KMeans:
 
-    def __init__(self, num_clusters=8, distance_function='euclidean', random_state=None):
+    def __init__(self, num_clusters=8, distance_function='euclidean', seed=None):
         self._num_clusters = num_clusters
         self._distance_function = distance_function
-        self._random = Random(random_state)
+        self._random = Random(seed)
         self.centroids_ = None
         self.labels_ = None
         self.inertia_ = None
