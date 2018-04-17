@@ -164,8 +164,8 @@ class KMeansTest(unittest.TestCase):
 
     def test_manhattan_distance(self):
         expected_labels = [0, 0, 0, 1, 1, 1]
-        expected_centroids = [[-1.6666667, -1.6666667], [1.6666667, 1.6666667]]
-        expected_inertia = 2.6666667
+        expected_centroids = [[-2, -2], [2, 2]]
+        expected_inertia = 4
         k_means = KMeans(num_clusters=self.num_clusters, distance_function='manhattan', seed=1)
         k_means.fit(self.data)
         self.assertEqual(expected_labels, k_means.labels_)

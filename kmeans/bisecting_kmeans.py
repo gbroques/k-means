@@ -2,6 +2,7 @@ from random import Random
 from typing import List
 
 from .kmeans import KMeans
+from .kmeans import EUCLIDEAN
 from .kmeans import distance
 from .kmeans import get_centroids
 from .kmeans import partition_by_cluster
@@ -9,7 +10,7 @@ from .kmeans import partition_by_cluster
 
 class BisectingKMeans:
 
-    def __init__(self, num_clusters: int, num_trials: int = 10, distance_function='euclidean', seed=None):
+    def __init__(self, num_clusters: int, num_trials: int = 10, distance_function=EUCLIDEAN, seed=None):
         self._num_clusters = num_clusters
         self._num_trials = num_trials
         self._distance_function = distance_function
@@ -21,7 +22,7 @@ class BisectingKMeans:
 
     def fit(self, data: List[List]) -> 'BisectingKMeans':
         clusters = [data]
-        self.centroids_ = get_centroids(clusters)
+        self.centroids_ = get_centroids(clusters, self._distance_function)
         while len(clusters) != self._num_clusters:
             cluster = select_cluster(clusters, self.centroids_, self._distance_function)
             clusters.remove(cluster)
@@ -36,7 +37,7 @@ class BisectingKMeans:
             best_result = trial_results[best_trial]
             best_two_clusters = partition_by_cluster(cluster, best_result.labels_)
             clusters.extend(best_two_clusters)
-        self.centroids_ = get_centroids(clusters)
+        self.centroids_ = get_centroids(clusters, self._distance_function)
         self.labels_ = get_labels(clusters)
         self.inertia_ = get_total_inertia(clusters, self.centroids_, self._distance_function)
         self.inertia_per_cluster_ = get_inertia_per_cluster(clusters, self.centroids_, self._distance_function)

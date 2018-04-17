@@ -4,10 +4,13 @@ from typing import List
 from scipy.spatial.distance import cityblock
 from scipy.spatial.distance import euclidean
 
+EUCLIDEAN = 'euclidean'
+MANHATTAN = 'manhattan'
+
 
 class KMeans:
 
-    def __init__(self, num_clusters=8, distance_function='euclidean', seed=None):
+    def __init__(self, num_clusters=8, distance_function=EUCLIDEAN, seed=None):
         self._num_clusters = num_clusters
         self._distance_function = distance_function
         self._random = Random(seed)
@@ -33,7 +36,7 @@ class KMeans:
             previous_labels = self.labels_[:]
             for i, point in enumerate(data):
                 self.labels_[i] = get_cluster_label(point, self.centroids_)
-                self.centroids_ = partition_and_get_centroids(data, self.labels_)
+                self.centroids_ = partition_and_get_centroids(data, self.labels_, self._distance_function)
             self.inertia_ = self._get_inertia(data)
             percentage_of_points_changed = get_percentage_of_points_changed(previous_labels, self.labels_)
         return self
@@ -64,7 +67,7 @@ class KMeans:
             None
         """
         self.labels_ = get_cluster_labels(data, self.centroids_)
-        self.centroids_ = partition_and_get_centroids(data, self.labels_)
+        self.centroids_ = partition_and_get_centroids(data, self.labels_, self._distance_function)
         self.inertia_ = self._get_inertia(data)
 
     def _select_initial_centroids(self, data: List[List]) -> List:
@@ -81,33 +84,36 @@ class KMeans:
         return self._random.sample(data, self._num_clusters)
 
 
-def partition_and_get_centroids(data: List[List], labels: List[int]) -> List[List]:
+def partition_and_get_centroids(data: List[List], labels: List[int], distance_function=None) -> List[List]:
     """Partition by cluster anc compute the centroids for each cluster in the data.
 
     Args:
         data: The dataset to compute the centroids for.
         labels: The labels containing which cluster each point belongs to.
+        distance_function: Whether to use euclidean or manhattan distance.
+                           Defaults to euclidean distance.
 
     Returns:
         The centroids of each cluster.
     """
     partition = partition_by_cluster(data, labels)
-    return get_centroids(partition)
+    return get_centroids(partition, distance_function)
 
 
-def get_centroids(clusters: List[List]) -> List[List]:
+def get_centroids(clusters: List[List], distance_function=None) -> List[List]:
     """Compute the centroids for a list of clusters.
 
     Args:
         clusters: A list of clusters.
-
+        distance_function: Whether to use euclidean or manhattan distance.
+                           Defaults to euclidean distance.
     Returns:
         The center point of each cluster.
     """
     centroids = []
     for cluster in range(len(clusters)):
         points_in_cluster = clusters[cluster]
-        centroid = get_centroid(points_in_cluster)
+        centroid = get_centroid(points_in_cluster, distance_function)
         centroids.append(centroid)
     return centroids
 
@@ -129,17 +135,25 @@ def partition_by_cluster(data: List[List], labels: List[int]) -> List:
     return partition
 
 
-def get_centroid(cluster: List[List]) -> List:
+def get_centroid(cluster: List[List], distance_function=EUCLIDEAN) -> List:
     """Calculate the center for a cluster of points.
     
     Args:
         cluster: A cluster of points.
-
+        distance_function: Whether to use euclidean or manhattan distance.
+                           Defaults to euclidean distance.
     Returns:
         The center of the cluster.
     """
-    total = len(cluster)
-    return [sum(points) / total for points in zip(*cluster)]
+    if distance_function == EUCLIDEAN or distance_function is None:
+        total = len(cluster)
+        return [sum(points) / total for points in zip(*cluster)]
+    elif distance_function == MANHATTAN:
+        geometric_median = \
+            min(map(lambda p1: (p1, sum(map(lambda p2: euclidean(p1, p2), cluster))), cluster), key=lambda x: x[1])[0]
+        return geometric_median
+    else:
+        raise ValueError('Invalid distance function {}'.format(distance_function))
 
 
 def get_percentage_of_points_changed(previous_labels: List, labels: List) -> float:
@@ -196,10 +210,10 @@ def get_cluster_label(point: List, centroids: List[List], distance_function: str
     return distances_from_centroids.index(min_distance)
 
 
-def distance(a: List[float], b: List[float], func='euclidean') -> float:
-    if func == 'euclidean' or func is None:
+def distance(a: List[float], b: List[float], func=EUCLIDEAN) -> float:
+    if func == EUCLIDEAN or func is None:
         return euclidean(a, b) ** 2
-    elif func == 'manhattan':
+    elif func == MANHATTAN:
         return cityblock(a, b)
     else:
         raise ValueError('Invalid distance function {}.'.format(func))
