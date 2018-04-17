@@ -56,7 +56,7 @@ def generate_clusters(num_clusters: int,
     for _ in range(num_clusters):
         x = x_min + (x_max - x_min) * random.random()
         y = y_min + (y_max - y_min) * random.random()
-        clusters.extend(generate_cluster(num_points_per_cluster, (x, y), spread))
+        clusters.extend(generate_cluster(num_points_per_cluster, (x, y), spread, seed))
     return clusters
 
 
@@ -75,8 +75,9 @@ def generate_cluster(num_points: int, center: Tuple[float, float], spread: float
     Returns:
         A random cluster of consisting of N points.
     """
-    random = Random(seed)
     x, y = center
+    seed = (seed + y) * x  # Generate different looking clusters if called from generate_clusters
+    random = Random(seed)
     points = []
     for i in range(num_points):
         theta = 2 * pi * random.random()
