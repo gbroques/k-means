@@ -72,7 +72,7 @@ def get_total_inertia(clusters: List[List[List]], centroids: List[List], distanc
     Returns:
         The total sum of squared errors.
     """
-    inertia_per_cluster = get_inertia_per_cluster(clusters, centroids)
+    inertia_per_cluster = get_inertia_per_cluster(clusters, centroids, distance_function)
     return sum(inertia_per_cluster)
 
 
