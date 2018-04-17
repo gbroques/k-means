@@ -96,7 +96,7 @@ class BisectingKMeansTest(unittest.TestCase):
 
     def test_manhattan_distance(self):
         expected_labels = [0, 0, 0, 0, 1, 1, 1, 1]
-        expected_centroids = [[2, 2], [-2, -2]]
+        expected_centroids = [[1, 1], [-3, -1]]
         expected_inertia = 16
         expected_inertia_per_cluster = [8, 8]
         k_means = BisectingKMeans(num_clusters=2, distance_function='manhattan', seed=1)
