@@ -1,7 +1,7 @@
 from math import cos
 from math import pi
 from math import sin
-from random import random
+from random import Random
 from typing import List, Tuple
 
 import matplotlib.pyplot as plt
@@ -30,7 +30,8 @@ def generate_clusters(num_clusters: int,
                       num_points: int,
                       spread: float,
                       bound_for_x: Tuple[float, float],
-                      bound_for_y: Tuple[float, float]) -> List[List]:
+                      bound_for_y: Tuple[float, float],
+                      seed=None) -> List[List]:
     """Generate random data for clustering.
 
     Source:
@@ -42,22 +43,24 @@ def generate_clusters(num_clusters: int,
         spread: The spread of each cluster. Decrease for tighter clusters.
         bound_for_x: The bounds for possible values of X.
         bound_for_y: The bounds for possible values of Y.
+        seed: Seed for the random number generator.
 
     Returns:
         K clusters consisting of N points.
     """
+    random = Random(seed)
     x_min, x_max = bound_for_x
     y_min, y_max = bound_for_y
     num_points_per_cluster = int(num_points / num_clusters)
     clusters = []
     for _ in range(num_clusters):
-        x = x_min + (x_max - x_min) * random()
-        y = y_min + (y_max - y_min) * random()
+        x = x_min + (x_max - x_min) * random.random()
+        y = y_min + (y_max - y_min) * random.random()
         clusters.extend(generate_cluster(num_points_per_cluster, (x, y), spread))
     return clusters
 
 
-def generate_cluster(num_points: int, center: Tuple[float, float], spread: float) -> List[List]:
+def generate_cluster(num_points: int, center: Tuple[float, float], spread: float, seed=None) -> List[List]:
     """Generates a cluster of random points.
 
     Source:
@@ -67,15 +70,17 @@ def generate_cluster(num_points: int, center: Tuple[float, float], spread: float
         num_points: The number of points for the cluster.
         center: The center of the cluster.
         spread: How tightly to cluster the data.
+        seed: Seed for the random number generator.
 
     Returns:
         A random cluster of consisting of N points.
     """
+    random = Random(seed)
     x, y = center
     points = []
     for i in range(num_points):
-        theta = 2 * pi * random()
-        s = spread * random()
+        theta = 2 * pi * random.random()
+        s = spread * random.random()
         point = [x + s * cos(theta), y + s * sin(theta)]
         points.append(point)
     return points
