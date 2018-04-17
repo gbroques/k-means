@@ -149,9 +149,9 @@ def get_centroid(cluster: List[List], distance_function=EUCLIDEAN) -> List:
         total = len(cluster)
         return [sum(points) / total for points in zip(*cluster)]
     elif distance_function == MANHATTAN:
-        geometric_median = \
+        geometric_medoid = \
             min(map(lambda p1: (p1, sum(map(lambda p2: euclidean(p1, p2), cluster))), cluster), key=lambda x: x[1])[0]
-        return geometric_median
+        return geometric_medoid
     else:
         raise ValueError('Invalid distance function {}'.format(distance_function))
 
