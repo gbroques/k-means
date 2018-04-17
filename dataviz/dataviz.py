@@ -9,21 +9,90 @@ import pandas as pd
 import seaborn as sns
 
 
-def plot_clusters(clusters: List[List], labels: List[int]) -> None:
+def plot_clusters(clusters: List[List], labels: List[int], centroids: List[List], seed=0) -> None:
     """Plot cluster data.
 
     Args:
         clusters: Cluster data to plot.
         labels: Labels of each point.
+        centroids: Center point of each cluster.
+        seed: Seed for random number generator.
+              Used to sample colors.
 
     Returns:
         None
     """
     columns = ['x', 'y']
-    data = pd.DataFrame(clusters, columns=columns)
-    data['labels'] = pd.Series(labels, index=data.index)  # Add labels as a column for coloring
-    sns.lmplot(*columns, data=data, fit_reg=False, legend=False, hue='labels')
+    num_clusters = len(set(labels))
+    data = get_data(clusters, labels, centroids, columns)
+    markers = get_markers(num_clusters)
+    palette = get_palette(num_clusters, seed)
+    g = sns.lmplot(*columns,
+                   data=data,
+                   markers=markers,
+                   palette=palette,
+                   fit_reg=False,
+                   legend=False,
+                   hue='labels',
+                   scatter_kws={'linewidth': 1, 'edgecolor': 'w'})
     plt.show()
+
+
+def get_data(clusters, labels, centroids, columns) -> pd.DataFrame:
+    """Construct a DataFrame object to plot.
+
+    Args:
+        clusters: The cluster data.
+        labels: Which cluster each point belongs to.
+        centroids: The center point of each cluster.
+        columns: Labels for each column of data.
+
+    Returns:
+
+    """
+    df = pd.DataFrame(clusters, columns=columns)
+    df['labels'] = pd.Series(labels, index=df.index)  # Add labels as a column for coloring
+    centroids_df = pd.DataFrame(centroids, columns=columns)
+    centroids_df['labels'] = ['centroid' for _ in range(len(centroids))]
+    df = df.append(centroids_df, ignore_index=True)
+    return df
+
+
+def get_markers(num_clusters) -> List[str]:
+    """Generate the marks for the plot.
+
+    Uses circles 'o' for points,
+    and crosses 'x' for centroids.
+
+    Args:
+        num_clusters: The number of clusters.
+
+    Returns:
+        A list of markers.
+    """
+    markers = ['o' for _ in range(num_clusters)]
+    markers.append('x')  # Reserve 'x' for centroids
+    return markers
+
+
+def get_palette(num_clusters, seed=0) -> List[str]:
+    """Generates a color palette for the plot.
+
+    Uses random colors for different clusters,
+    and reserves red for centroids.
+
+    Args:
+        num_clusters: The number of clusters.
+        seed: Seed for random number generator.
+
+    Returns:
+
+    """
+    random = Random(seed)
+    all_colors = ['b', 'g', 'c', 'm', 'orange']
+    palette = random.sample(all_colors, num_clusters)
+    palette.append('red')  # Reserve red color for centroids
+    return palette
 
 
 def generate_clusters(num_clusters: int,
