@@ -1,3 +1,4 @@
+from itertools import chain
 from random import Random
 from typing import List
 
@@ -295,3 +296,28 @@ def get_inertia_per_cluster(data: List[List], centroids: List[List], labels: Lis
         cluster_inertia = get_inertia(data_per_cluster, closest_centroids_per_cluster)
         inertia_per_cluster.append(cluster_inertia)
     return inertia_per_cluster
+
+
+def get_inter_cluster_distances(data: List[List], labels: List[int], distance_function=None) -> List[float]:
+    """Get the distances between points in different clusters.
+
+    Args:
+        data: Cluster data.
+        labels: The cluster each point belongs to.
+        distance_function: Whether to use euclidean or manhattan distance.
+                           Defaults to euclidean distance.
+
+    Returns:
+        A list of inter-cluster distances.
+    """
+    inter_cluster_distances = []
+    clusters = partition_by_cluster(data, labels)
+    for cluster in clusters:
+        for point in cluster:
+            other_clusters = clusters[:]  # Copy cluster data before removing cluster
+            other_clusters.remove(cluster)
+            points_in_other_clusters = chain.from_iterable(other_clusters)  # Flatten other clusters
+            for point_in_other_cluster in points_in_other_clusters:
+                inter_cluster_distance = distance(point, point_in_other_cluster, distance_function)
+                inter_cluster_distances.append(inter_cluster_distance)
+    return inter_cluster_distances
